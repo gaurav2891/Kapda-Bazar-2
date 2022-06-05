@@ -89,6 +89,7 @@ const App = (props) => {
 const styles = StyleSheet.create({
   body: {
     flex: 1,
+    backgroundColor: "#e6e7e8",
   },
   card: {
     marginTop: 80,

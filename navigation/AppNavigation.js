@@ -38,9 +38,31 @@ import UpdatePassword from "./../screen/USER/updatePassword";
 
 // RETAILER LISTS
 const RetailersList = () => {
+  const [user, setUser] = useState("");
+
+  const currentUser = async () => {
+    const check = await AsyncStorage.getItem("currentUser");
+    const res = JSON.parse(check);
+
+    if (res && res.name) {
+      setUser(res);
+    }
+    res;
+  };
+  useEffect(() => {
+    currentUser();
+  }, []);
+
   return (
     <Stack.Navigator>
-      <Stack.Screen name="RetailerName" component={Retailer} />
+      <Stack.Screen
+        name={
+          user
+            ? user.firmName.charAt(0).toUpperCase() + user.firmName.slice(1)
+            : "RetailerName"
+        }
+        component={Retailer}
+      />
       <Stack.Screen name="RetailerDetail" component={RetailerDetail} />
       <Stack.Screen name="AddRetailer" component={AddRetailer} />
       <Stack.Screen name="ShowDetails" component={ShowDetails} />
@@ -85,20 +107,30 @@ const AppNavigator = () => {
       <Tab.Screen
         name="RetailersList"
         component={RetailersList}
+        screenOptions={{
+          tabBarHideOnKeyboard: true,
+        }}
         options={{
           headerShown: false,
+          // tabBarBadge: 3,
         }}
       />
       <Tab.Screen
         name="MyComments"
         component={Comment}
+        screenOptions={{
+          tabBarHideOnKeyboard: true,
+        }}
         options={<MaterialIcons name="favorite" size={24} color="black" />}
       />
       <Tab.Screen
         name="Profile"
         component={WholesalerList}
+        screenOptions={{
+          tabBarHideOnKeyboard: true,
+        }}
         options={{
-          title: "My Profile",
+          // title: "My Profile",
           // headerStyle: {
           //   backgroundColor: "lightcyan",
           // },

@@ -35,6 +35,7 @@ const formSchema = yup.object({
 
 const RegisterScreen = (navData) => {
   const [selectCloth, setSelectCloth] = useState("");
+  const [selectNewCloth, setSelectNewCloth] = useState("");
   const dispatch = useDispatch();
 
   const { signUp } = useContext(AuthContext);
@@ -183,18 +184,6 @@ const RegisterScreen = (navData) => {
               <View style={styles.box}>
                 {/* <Text style={styles.textField}>Cloth Category: </Text> */}
                 <Text style={styles.textField}>Cloth Category: </Text>
-                {/* <Text style={styles.options}>
-                  {`1 Ready_Made \n 2 Kaccha_Kapda`}
-                </Text> */}
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your cloth Cateogry"
-                  onChangeText={props.handleChange("clothCategory")}
-                  placeholderTextColor={"#ffff"}
-                  value={props.values.clothCategory}
-                  onBlur={props.handleBlur("clothCategory")}
-                />
 
                 <Picker
                   onValueChange={(category) => {
@@ -207,14 +196,23 @@ const RegisterScreen = (navData) => {
                   <Picker.Item label="Kaccha_kapda" value="Kaccha_kapda" />
                   <Picker.Item label="Other" value="Other" />
                 </Picker>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Select Cloth-Category"
-                  // onChangeText={props.handleChange("clothCategory")}
-                  placeholderTextColor={"#ffff"}
-                  value={selectCloth ?? "Select Cloth-categoey"}
-                  onBlur={props.handleBlur("clothCategory")}
-                />
+
+                <View>
+                  {selectCloth.toUpperCase() === "OTHER" ? (
+                    <View>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Enter cloth Cateogry"
+                        onChangeText={setSelectNewCloth}
+                        placeholderTextColor={"#ffff"}
+                        value={selectNewCloth}
+                        onBlur={props.handleBlur("clothCategory")}
+                      />
+                    </View>
+                  ) : (
+                    <View></View>
+                  )}
+                </View>
 
                 <Text style={styles.errors}>
                   {props.touched.clothCategory && props.errors.clothCategory}

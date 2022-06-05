@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   StyleSheet,
   View,
@@ -6,10 +6,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Button,
-  ActivityIndicator,
+  RefreshControl,
   TextInput,
   Alert,
 } from "react-native";
+
+import { useIsFocused } from "@react-navigation/native";
 
 import { useDispatch, useSelector } from "react-redux";
 import * as retailerAction from "../../redux/action/RetailerAction";
@@ -17,28 +19,62 @@ import * as addCommentAction from "../../redux/action/addCommentAction";
 import catchDispatch from "./../../utils/catchDispatch";
 
 import SplashScreen from "../splashScreen";
-import CommentCard from "../../component/commentCard";
+
+//
+
+//
+//
+//
+//
+//
+//
+//
+
+//
+//
 
 const App = (props) => {
-  let { name, firmName, clothCategory, location, id } = props.route.params;
-
+  let wrComment;
+  const isFocused = useIsFocused();
+  const [selectComment, setSelectComment] = useState({});
   const dispatch = useDispatch();
+
+  let commentData = {};
+  const { name, firmName, clothCategory, id } = props.route.params;
+
+  const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
-    dispatch(retailerAction.fetchWRComment(id)).then(() => setIsLoading(false));
+    dispatch(retailerAction.fetchRetailerComment(id)).then(() =>
+      setIsLoading(false)
+    );
+    // dispatch(retailerAction.fetchWRComment(id)).then(() => setIsLoading(false));
   }, [dispatch]);
 
-  const wrComment = useSelector((state) => state.retailer.wrComment);
-
+  // TODO:   FUNCTION OF screens  TODO:
   const deleteComment = (id) => {
+    const deleteComment = {
+      data: 0,
+    };
     catchDispatch(
       dispatch(addCommentAction.deleteComment(id)),
       "Comment Deleted",
-      props.navigation.navigate("RetailerName")
+      props.navigation.navigate("RetailerDetail", {
+        name,
+        firmName,
+        clothCategory,
+        id,
+        updatedCommentData: deleteComment,
+      })
     );
   };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    dispatch(retailerAction.fetchWRComment(id)).then(() => setIsLoading(false));
+  }, []);
 
   if (isLoading) {
     return (
@@ -48,10 +84,131 @@ const App = (props) => {
     );
   }
 
-  // }
+  // TODO:   FUNCTION OF screens  TODO:
+
+  const ShowCommentHere = ({ showedComment }) => {
+    // console.log("======================", selectComment);
+
+    return (
+      <View>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate("UpdateComment", {
+              name,
+              firmName,
+              showedComment,
+              id,
+              clothCategory,
+            });
+          }}
+        >
+          <ScrollView>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.date}>{showedComment.data.date}</Text>
+              <Text style={styles.text}>{`${showedComment.data.comment}`}</Text>
+            </View>
+          </ScrollView>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() =>
+            props.navigation.navigate("UpdateComment", {
+              showedComment,
+              name,
+              firmName,
+              clothCategory,
+              id,
+            })
+          }
+        >
+          <Text
+            style={{
+              color: "blue",
+              alignSelf: "flex-end",
+              fontSize: 20,
+              paddingEnd: 14,
+            }}
+          >
+            {"\n"}
+            Update comment
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+  const AddCommentHere = () => {
+    return (
+      <View>
+        <TouchableOpacity
+          onPress={() =>
+            props.navigation.navigate("AddComment", {
+              id,
+              name,
+              firmName,
+              clothCategory,
+            })
+          }
+        >
+          <Text
+            style={{
+              fontSize: 22,
+              fontWeight: "200",
+              color: "grey",
+              justifyContent: "space-between",
+              alignItems: "center",
+              textDecorationColor: "black",
+            }}
+            placeholder="Add comment here"
+          >
+            Add comment here..
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const Comment = () => {
+    // console.log("💩🚼🚼🚼🚼🚼🚼🚼🚼🚼🚼🚼🚼🚼🚼🚼🚼", selectComment);
+    getValue();
+
+    let wrComment = useSelector((state) => state.retailer.wrComment);
+
+    // console.log("👺👹✅✅✅👹👹", wrComment);
+
+    function getValue() {
+      if (!props.route.params.updatedCommentData) {
+        setSelectComment(wrComment);
+      } else if (props.route.params.updatedCommentData) {
+        let commentData = props.route.params.updatedCommentData;
+        setSelectComment(commentData);
+      } else {
+        // console.log(
+        //   "❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌"
+        // );
+        setSelectComment(wrComment);
+      }
+    }
+
+    !selectComment || selectComment.data == undefined ? getValue() : getValue();
+    return (
+      <View>
+        {selectComment && selectComment.data ? (
+          <ShowCommentHere showedComment={selectComment} />
+        ) : null}
+        {!selectComment || selectComment.data == 0 ? <AddCommentHere /> : null}
+      </View>
+    );
+  };
+
+  //
+
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#e6e7e8" }}>
-      {/*  OUTLINE DESIGN */}
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#e6e7e8" }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View>
         <Text style={styles.name}>{firmName}</Text>
         <Text style={styles.status}>Retailer : {name} </Text>
@@ -60,86 +217,27 @@ const App = (props) => {
       </View>
 
       <View style={styles.commentContainer}>
-        {wrComment.data == null ||
-        wrComment.status === "FAILED" ||
-        wrComment.data === 0 ? (
-          <TouchableOpacity
-            onPress={() =>
-              props.navigation.navigate("AddComment", {
-                id,
-              })
-            }
-          >
-            <Text
-              style={{
-                fontSize: 22,
-                fontWeight: "200",
-                color: "grey",
-                justifyContent: "space-between",
-                alignItems: "center66666ppol,,,,,,,,,mm       ",
-                textDecorationColor: "black",
-              }}
-              placeholder="Add comment here"
-            >
-              Add comment here..
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() => {
-              props.navigation.navigate("UpdateComment", {
-                wrComment,
-                id,
-              });
-            }}
-          >
-            <ScrollView>
-              <Text style={styles.date}>{wrComment.data.date}</Text>
-              <Text
-                style={styles.text}
-              >{`Comment: ${wrComment.data.comment}`}</Text>
-            </ScrollView>
-          </TouchableOpacity>
-        )}
+        {/* {console.log("😈😈😈😈😈😈😈", selectComment)} */}
+        {selectComment ? <Comment /> : null}
       </View>
 
-      <View>
-        {wrComment.data == null ||
-        wrComment.status === "FAILED" ||
-        wrComment.data === 0 ? (
-          <View>
-            <Text></Text>
-          </View>
-        ) : (
-          <TouchableOpacity
-            onPress={() =>
-              props.navigation.navigate("UpdateComment", {
-                wrComment,
-                id,
-              })
-            }
-          >
-            <Text
-              style={{
-                color: "blue",
-                alignSelf: "flex-end",
-                fontSize: 20,
-                paddingEnd: 14,
-              }}
-            >
-              Update comment
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      {/*  */}
+      {/*  */}
+      {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //                  //     THIS SHOULD HAPPEN IN EVERY RENDERING OF PAGE
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
+      {/* VIEW DETAIL FUNCTIONS      */}
       <View>
         <TouchableOpacity
           style={styles.showDetails}
           onPress={() =>
             props.navigation.navigate("ShowDetails", {
-              wrComment,
+              // selectComment,
               id,
+              name,
+              firmName,
+              clothCategory,
             })
           }
         >
@@ -156,7 +254,7 @@ const App = (props) => {
         <TouchableOpacity
           style={styles.deleteButton}
           onPress={() =>
-            Alert.alert("Delete", "Do you wan to delete your comment", [
+            Alert.alert("Delete", "Do you want to delete your comment", [
               {
                 text: "Delete",
                 onPress: () => deleteComment(id),
@@ -199,10 +297,10 @@ const styles = StyleSheet.create({
     shadowColor: "black",
     shadowOpacity: 0.25,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
+    shadowRadius: 2,
     borderRadius: 10,
     backgroundColor: "#ffffff",
-    elevation: 5,
+    elevation: 12,
     // height: "38%",
   },
   comment: {
@@ -236,13 +334,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     padding: 10,
     marginBottom: 10,
-    shadowColor: "lightcyan",
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
+    // shadowColor: "lightcyan",
+    // shadowOpacity: 0.25,
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowRadius: 8,
     borderRadius: 80,
     elevation: 5,
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
 
     backgroundColor: "orangered",
   },
@@ -302,3 +400,76 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+// if (!props.route.params.updatedCommentData) {
+//   try {
+//     console.log("xx");
+//     // wrComment = useSelector((state) => state.retailer.wrComment);
+//     // console.log("👺👹👹👹", wrComment);
+//   } catch (error) {
+//     console.log("xx error =>>>", error);
+//   }
+// } else {
+//   console.log("🧯㊗🧯🧯🧯", props.route.params.updatedCommentData);
+//   commentData = props.route.params.updatedCommentData;
+//   console.log(
+//     "Add COmment se 😎🤜⤴⤴⤴🤜🤜🤜🤜🤜 comment aaya h ",
+//     commentData
+//   );
+//   setSelectComment(commentData);
+// }
+
+{
+  /* console.log(
+    "\n\n🐢🐢🐢🐢💀💀💀, ",
+    wrComment,
+    "✅✅✅✅",
+    // selectComment,
+    "\n\n"
+  ); */
+}
+{
+  /*  */
+}
+{
+  /*  */
+}
+{
+  /*  */
+}
+{
+  /* UPDATE COMMENT TAGS */
+}
+
+{
+  /* <View>
+        {!selectComment.data.date ? (
+          <View>
+            <Text></Text>
+          </View>
+        ) : (
+          <TouchableOpacity
+            onPress={() =>
+              props.navigation.navigate("UpdateComment", {
+                wrComment: selectComment,
+                name,
+                firmName,
+                clothCategory,
+                id,
+              })
+            }
+          >
+            <Text
+              style={{
+                color: "blue",
+                alignSelf: "flex-end",
+                fontSize: 20,
+                paddingEnd: 14,
+              }}
+            >
+              Update comment
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View> */
+}

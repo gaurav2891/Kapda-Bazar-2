@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import {
   StyleSheet,
   View,
@@ -48,6 +50,9 @@ const districts = [
 const App = (props) => {
   const dispatch = useDispatch();
 
+  // ////   HOOKS
+  const [userName, setUser] = useState("");
+
   const [selected, setSelected] = useState("");
   let [searchFirm, setSearhFirm] = useState("");
   const [searchDistrict, setSearchDistrict] = useState("");
@@ -60,7 +65,20 @@ const App = (props) => {
   const retailerList = retailerDataList.map((el) => el.firmName.toUpperCase());
   // console.log(retailerList);
 
-  useEffect(() => {}, [selected]);
+  // /////   FUNCTIONS
+
+  const currentUser = async () => {
+    const check = await AsyncStorage.getItem("currentUser");
+    const res = JSON.parse(check);
+    if (res.name) {
+      setUser(res);
+    }
+    res;
+  };
+
+  useEffect(() => {
+    currentUser();
+  }, [selected]);
 
   const getFirm = (value) => {
     setSearhFirm(value);
@@ -86,7 +104,7 @@ const App = (props) => {
           catchDispatch(
             dispatch(retailerAction.addRetailer(values)),
             "Retailer Added",
-            props.navigation.navigate("RetailerName")
+            props.navigation.navigate(userName)
           );
         }}
       >
@@ -196,7 +214,6 @@ const App = (props) => {
                     <View></View>
                   )}
                 </View>
-                <View></View>
               </View>
               <Text style={styles.error}>
                 {props.touched.clothCategory && props.errors.clothCategory}

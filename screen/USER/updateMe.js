@@ -58,7 +58,7 @@ const WholesalerBody = (props) => {
             value={stateName}
           />
         </View>
-        <View style={styles.box}>
+        {/* <View style={styles.box}>
           <Text style={styles.textField}>LandMark: </Text>
           <TextInput
             style={styles.input}
@@ -66,7 +66,7 @@ const WholesalerBody = (props) => {
             onChangeText={settateLandMark}
             value={stateLandMark}
           />
-        </View>
+        </View> */}
         <View style={styles.box}>
           <Text style={styles.textField}>Whatsapp Number: </Text>
           <TextInput
@@ -76,15 +76,7 @@ const WholesalerBody = (props) => {
             value={`${stateWhatsappNumber}`}
           />
         </View>
-        <View style={styles.box}>
-          <Text style={styles.textField}>MobileNumber: </Text>
-          <TextInput
-            style={styles.input}
-            placeholder="enter here"
-            onChangeText={setstateMobileNumber}
-            value={`${stateMobileNumber}`}
-          />
-        </View>
+
         <View style={styles.box}>
           <Text style={styles.textField}>Address: </Text>
           <TextInput

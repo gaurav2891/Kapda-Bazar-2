@@ -7,7 +7,8 @@ const catchDispatch = async (dispatch, data, func) => {
         Alert.alert("Fail", res.message);
       } else if (res.status === "SUCCESS") {
         Alert.alert("Success", ` ${data}`);
-        func;
+        // console.log("func", typeof func);
+        // setTimeout(() => func, 1000);
       }
     })
     .catch((err) => {

@@ -6,7 +6,10 @@ import {
   TextInput,
   Button,
   FlatList,
+  Keyboard,
   StatusBar,
+  TouchableWithoutFeedback,
+  Dimensions,
   Image,
 } from "react-native";
 
@@ -70,24 +73,44 @@ const App = (props) => {
     });
   }, []);
 
-  const image = require("./../../assets/homeScreen.jpg");
+  const image = require("./../../assets/homeScreen2.jpg");
+  const screenHeight = Dimensions.get("window").height;
+  const screenWidth = Dimensions.get("window").width;
+  console.log(screenHeight, screenHeight);
 
   return (
     <View style={styles.body}>
       <ImageBackground
         source={image}
         style={{
-          resizeMode: "contain",
+          // resizeMode: "cover",
+          // width: "100%",
+          // height: "100%",
           flex: 1,
+          height: screenHeight,
+          width: screenWidth,
+          // justifyContent: "center",
+          // // allignContent: "center",
+          // aliignItems: "center"
+          // width: 100,
+          // height: "100%",
+          // borderRadius: 100,
+          // backgroundColor: "#00BCD4",
+          // justifyContent: "center",
+          // alignItems: "center",
         }}
+        resizeMode="contain"
+        // backfaceVisibility
       >
         <View>
-          <TextInput
-            style={styles.input}
-            placeholder="Search"
-            value={search}
-            onChangeText={(text) => searchFilteredfunction(text)}
-          />
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <TextInput
+              style={styles.input}
+              placeholder="🍳  Retailer-Firm-Name"
+              value={search}
+              onChangeText={(text) => searchFilteredfunction(text)}
+            />
+          </TouchableWithoutFeedback>
         </View>
 
         <FlatList
@@ -102,7 +125,6 @@ const App = (props) => {
               name={item.name}
               firmName={item.firmName}
               clothCategory={item.clothCategory}
-              location={item.location}
               id={item._id}
             />
           )}
@@ -124,7 +146,7 @@ const App = (props) => {
 const styles = StyleSheet.create({
   body: {
     flex: 1,
-    // backgroundColor: "skyblue",
+    backgroundColor: "#8b2c44",
   },
   card: {
     marginTop: 80,

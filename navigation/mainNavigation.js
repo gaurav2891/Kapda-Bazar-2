@@ -24,7 +24,7 @@ const MainNavigation = () => {
         userToken = values.token;
       }
       const decodeToken = jwtDecode(userToken);
-      // console.log("decode, SIGN IN", decodeToken);
+      // console.log("decode, SIGN IN😀😀😀😀😀", decodeToken);
       dispatch({ type: "LOGIN", id: "username", token: userToken });
     },
     signout: async () => {

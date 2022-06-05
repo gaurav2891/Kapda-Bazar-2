@@ -14,17 +14,31 @@ import catchDispatch from "./../../utils/catchDispatch";
 
 import { useDispatch } from "react-redux";
 const App = (props) => {
+  const { name, firmName, clothCategory, id } = props.route.params;
+
+  // console.log("😀ADD COMMENT😀", name, firmName, clothCategory, id);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [comment, setComment] = useState("");
 
-  const { id } = props.route.params;
-
   const addComment = (comment, id) => {
+    let updatedCommentData = {
+      data: {
+        date: JSON.stringify(new Date()).split("T")[0].slice(1),
+        comment,
+      },
+    };
+
     catchDispatch(
       dispatch(addCommentAction.addComment(comment, id)),
       `Comment Added: ${comment}`,
-      props.navigation.navigate("RetailerName")
+      props.navigation.navigate("RetailerDetail", {
+        firmName,
+        name,
+        clothCategory,
+        id,
+        updatedCommentData,
+      })
     );
     setIsLoading(false);
   };
@@ -39,11 +53,14 @@ const App = (props) => {
 
   return (
     <ScrollView>
-      <Text style={styles.header}>Write Comment here</Text>
+      <Text style={styles.header}>
+        Write Comment on :- {` \n`} {firmName}
+      </Text>
       <TextInput
         style={styles.commentContainer}
         placeholder="Add comment here"
         multiline
+        autoFocus={true}
         onChangeText={(text) => setComment(text)}
       />
 

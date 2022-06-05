@@ -15,7 +15,7 @@ const Card = (props) => {
                 color: "black",
                 padding: 4,
                 backgroundColor: "#f0efeb",
-                fontWeight: "bold",
+                fontWeight: "900",
                 // maxWidth: 350,
               }}
             >

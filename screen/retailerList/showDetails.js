@@ -15,19 +15,22 @@ import SplashScreen from "../splashScreen";
 import { useSelector, useDispatch } from "react-redux";
 
 const App = (props) => {
-  const { wrComment, id } = props.route.params;
+  const { selectComment, id } = props.route.params;
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
     setIsLoading(true);
     dispatch(retailerAction.fetchRetailerComment(id)).then(() =>
-      setIsLoading(false)
+      dispatch(retailerAction.fetchWRComment(id)).then(() =>
+        setIsLoading(false)
+      )
     );
     // dispatch(retailerAction.fetchWRComment(id)).then(() => setIsLoading(false));
   }, [dispatch]);
 
   let comments = useSelector((state) => state.retailer.retailerComment);
+  let wrComment = useSelector((state) => state.retailer.wrComment);
 
   if (isLoading) {
     return (
@@ -46,6 +49,13 @@ const App = (props) => {
       date: "00-00-0000",
       _id: "0000000000",
       comment: "No Comment....",
+    };
+  }
+
+  if (!wrComment || wrComment.data == null) {
+    wrComment.data = {
+      date: "00-00-0000",
+      comment: "No Comment",
     };
   }
 

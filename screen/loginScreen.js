@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  ActivityIndicator,
   KeyboardAvoidingView,
 } from "react-native";
 import { Formik } from "formik";
@@ -17,6 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as authAction from "./../redux/action/authActions";
 import { AuthContext } from "../navigation/context";
+// import { ActivityIndicator } from "react-native-paper";
 
 const formSchema = yup.object({
   firmName: yup.string().required().trim(),
@@ -34,6 +36,7 @@ const LoginScreen = (navData) => {
         initialValues={{ firmName: "", password: "" }}
         validateSchema={formSchema}
         onSubmit={(values) => {
+          <ActivityIndicator />;
           dispatch(authAction.loginUser(values))
             .then(async (result) => {
               if (result.status === "SUCCESS") {
@@ -83,7 +86,7 @@ const LoginScreen = (navData) => {
             <TouchableOpacity
               style={styles.button}
               onPress={props.handleSubmit}
-              underlayColor={"#B6BFC4"}
+              underlayColor={"#898888"}
             >
               <Text
                 style={styles.buttonText}
